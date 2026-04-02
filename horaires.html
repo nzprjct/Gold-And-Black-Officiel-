@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Horaires — Gold & Black</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Montserrat:wght@400;600;700&family=Barlow+Condensed:wght@300;400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --gold: #C9A84C;
+      --gold-gradient: linear-gradient(135deg, #C9A84C 0%, #F5D376 50%, #C9A84C 100%);
+      --black: #0A0A0A;
+      --white: #F5F0E8;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Montserrat', sans-serif;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+    }
+
+    /* ---- TOPBAR ---- */
+    .topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: 72px;
+      background: rgba(8,8,8,0.97);
+      border-bottom: 1px solid rgba(201,168,76,0.18);
+      display: flex; align-items: center;
+      padding: 0 2.5rem;
+    }
+    .topbar-logo {
+      font-family: 'Black Ops One', sans-serif;
+      font-size: 1.4rem;
+      background: var(--gold-gradient);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 0.08em;
+      text-decoration: none;
+    }
+    .topbar-back {
+      margin-left: auto;
+      display: flex; align-items: center; gap: 0.5rem;
+      color: rgba(201,168,76,0.75);
+      font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .topbar-back:hover { color: var(--gold); }
+    .topbar-back svg {
+      width: 14px; height: 14px;
+      stroke: currentColor; fill: none;
+      stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    /* ---- PAGE ---- */
+    .page {
+      flex: 1;
+      display: flex; align-items: center; justify-content: center;
+      padding: 110px 2rem 5rem;
+    }
+
+    /* ---- CARD ---- */
+    .card {
+      width: 100%; max-width: 560px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(201,168,76,0.18);
+      border-radius: 3px;
+      overflow: hidden;
+      box-shadow: 0 20px 80px rgba(0,0,0,0.6);
+      position: relative;
+    }
+    .card::before {
+      content: '';
+      position: absolute; top: 0; left: 0;
+      width: 3px; height: 70px;
+      background: var(--gold-gradient);
+    }
+
+    .card-header {
+      padding: 2.8rem 3rem 2rem;
+      border-bottom: 1px solid rgba(201,168,76,0.1);
+    }
+    .card-label {
+      font-size: 0.65rem; letter-spacing: 0.4em; text-transform: uppercase;
+      color: rgba(201,168,76,0.55); font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .card-title {
+      font-family: 'Black Ops One', sans-serif;
+      font-size: 2.4rem; letter-spacing: 0.06em; line-height: 1;
+      background: var(--gold-gradient);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ---- HORAIRES TABLE ---- */
+    .hours-list {
+      padding: 0.5rem 0;
+    }
+
+    .hours-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.1rem 3rem;
+      border-bottom: 1px solid rgba(201,168,76,0.07);
+      transition: background 0.2s;
+      position: relative;
+    }
+    .hours-row:last-child { border-bottom: none; }
+    .hours-row:hover { background: rgba(201,168,76,0.04); }
+
+    /* Indicateur jour actuel */
+    .hours-row.today::before {
+      content: '';
+      position: absolute; left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: var(--gold-gradient);
+    }
+    .hours-row.today .day-name {
+      color: var(--gold);
+    }
+
+    .day-name {
+      font-size: 0.88rem; font-weight: 500;
+      color: rgba(245,240,232,0.75);
+      letter-spacing: 0.04em;
+      min-width: 110px;
+    }
+
+    .day-right {
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+
+    .day-hours {
+      font-size: 0.88rem; font-weight: 600;
+      color: rgba(245,240,232,0.9);
+      letter-spacing: 0.06em;
+    }
+    .day-hours.closed {
+      color: rgba(245,240,232,0.3);
+      font-weight: 400;
+      font-style: italic;
+    }
+
+    /* Badge "Ouvert maintenant" */
+    .badge-open {
+      display: none;
+      font-size: 0.6rem; font-weight: 700;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--black);
+      background: var(--gold-gradient);
+      padding: 0.2rem 0.6rem;
+      border-radius: 2px;
+    }
+    .hours-row.today.open-now .badge-open { display: inline-block; }
+  </style>
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <a class="topbar-logo" href="index.html">GOLD &amp; BLACK</a>
+    <a class="topbar-back" href="index.html">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      Retour
+    </a>
+  </header>
+
+  <!-- PAGE -->
+  <main class="page">
+    <div class="card">
+
+      <div class="card-header">
+        <p class="card-label">Planning de la semaine</p>
+        <h1 class="card-title">Horaires</h1>
+      </div>
+
+      <div class="hours-list" id="hoursList">
+        <!-- Lundi -->
+        <div class="hours-row" data-day="1" data-open="" data-close="">
+          <span class="day-name">Lundi</span>
+          <div class="day-right"><span class="day-hours closed">Fermé</span><span class="badge-open">Ouvert</span></div>
+        </div>
+        <!-- Mardi -->
+        <div class="hours-row" data-day="2" data-open="09:00" data-close="20:00">
+          <span class="day-name">Mardi</span>
+          <div class="day-right"><span class="day-hours">09:00 – 20:00</span><span class="badge-open">Ouvert</span></div>
+        </div>
+        <!-- Mercredi -->
+        <div class="hours-row" data-day="3" data-open="09:00" data-close="20:00">
+          <span class="day-name">Mercredi</span>
+          <div class="day-right"><span class="day-hours">09:00 – 20:00</span><span class="badge-open">Ouvert</span></div>
+        </div>
+        <!-- Jeudi -->
+        <div class="hours-row" data-day="4" data-open="09:00" data-close="20:00">
+          <span class="day-name">Jeudi</span>
+          <div class="day-right"><span class="day-hours">09:00 – 20:00</span><span class="badge-open">Ouvert</span></div>
+        </div>
+        <!-- Vendredi -->
+        <div class="hours-row" data-day="5" data-open="09:00" data-close="20:00">
+          <span class="day-name">Vendredi</span>
+          <div class="day-right"><span class="day-hours">09:00 – 20:00</span><span class="badge-open">Ouvert</span></div>
+        </div>
+        <!-- Samedi -->
+        <div class="hours-row" data-day="6" data-open="09:00" data-close="20:00">
+          <span class="day-name">Samedi</span>
+          <div class="day-right"><span class="day-hours">09:00 – 20:00</span><span class="badge-open">Ouvert</span></div>
+        </div>
+        <!-- Dimanche -->
+        <div class="hours-row" data-day="0" data-open="10:00" data-close="19:00">
+          <span class="day-name">Dimanche</span>
+          <div class="day-right"><span class="day-hours">10:00 – 19:00</span><span class="badge-open">Ouvert</span></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script></script>
+
+</body>
+</html>

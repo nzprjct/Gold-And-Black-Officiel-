@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adresse — Gold & Black</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Montserrat:wght@400;600;700&family=Barlow+Condensed:wght@300;400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --gold: #C9A84C;
+      --gold-gradient: linear-gradient(135deg, #C9A84C 0%, #F5D376 50%, #C9A84C 100%);
+      --black: #0A0A0A;
+      --white: #F5F0E8;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Montserrat', sans-serif;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+    }
+
+    /* ---- TOPBAR ---- */
+    .topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: 72px;
+      background: rgba(8,8,8,0.97);
+      border-bottom: 1px solid rgba(201,168,76,0.18);
+      display: flex; align-items: center;
+      padding: 0 2.5rem;
+      gap: 1.2rem;
+    }
+    .topbar-logo {
+      font-family: 'Black Ops One', sans-serif;
+      font-size: 1.4rem;
+      background: var(--gold-gradient);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 0.08em;
+      text-decoration: none;
+    }
+    .topbar-back {
+      margin-left: auto;
+      display: flex; align-items: center; gap: 0.5rem;
+      color: rgba(201,168,76,0.75);
+      font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .topbar-back:hover { color: var(--gold); }
+    .topbar-back svg {
+      width: 14px; height: 14px;
+      stroke: currentColor; fill: none;
+      stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    /* ---- PAGE ---- */
+    .page {
+      flex: 1;
+      display: flex; flex-direction: column;
+      padding: 72px 0 0;
+    }
+
+    /* ---- HERO ADRESSE ---- */
+    .addr-hero {
+      flex: 1;
+      display: grid; grid-template-columns: 420px 1fr;
+      gap: 0;
+      border-top: 1px solid rgba(201,168,76,0.18);
+      overflow: hidden;
+    }
+
+    /* Colonne gauche — infos */
+    .addr-info {
+      background: rgba(255,255,255,0.02);
+      padding: 5rem 4rem;
+      display: flex; flex-direction: column; justify-content: center;
+      gap: 2.5rem;
+      border-right: 1px solid rgba(201,168,76,0.15);
+      position: relative;
+    }
+    .addr-info::before {
+      content: '';
+      position: absolute; top: 0; left: 0;
+      width: 3px; height: 70px;
+      background: var(--gold-gradient);
+    }
+
+    .addr-label {
+      font-size: 0.65rem; letter-spacing: 0.4em; text-transform: uppercase;
+      color: rgba(201,168,76,0.55); font-weight: 700;
+    }
+    .addr-title {
+      font-family: 'Black Ops One', sans-serif;
+      font-size: 3rem; letter-spacing: 0.06em; line-height: 1.1;
+      background: var(--gold-gradient);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .addr-divider {
+      width: 48px; height: 1px;
+      background: var(--gold-gradient);
+    }
+
+    .addr-lines {
+      display: flex; flex-direction: column; gap: 0.5rem;
+    }
+    .addr-lines .line-main {
+      font-size: 1.1rem; font-weight: 600;
+      color: var(--white); letter-spacing: 0.02em;
+    }
+    .addr-lines .line-sub {
+      font-size: 0.85rem; font-weight: 400;
+      color: rgba(245,240,232,0.55); letter-spacing: 0.04em;
+    }
+    .addr-lines .line-gold {
+      font-size: 0.78rem; font-weight: 700;
+      color: rgba(201,168,76,0.7); letter-spacing: 0.12em; text-transform: uppercase;
+      margin-top: 0.3rem;
+    }
+
+    .addr-btn {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      align-self: flex-start;
+      background: var(--gold-gradient);
+      color: var(--black);
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700; font-size: 0.72rem;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      padding: 0.8rem 1.8rem;
+      border: none; border-radius: 2px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: opacity 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 20px rgba(201,168,76,0.3);
+    }
+    .addr-btn:hover { opacity: 0.85; box-shadow: 0 0 40px rgba(201,168,76,0.55); }
+    .addr-btn svg {
+      width: 14px; height: 14px;
+      stroke: var(--black); fill: none;
+      stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    /* Colonne droite — carte */
+    .addr-map {
+      position: relative;
+    }
+    .addr-map iframe {
+      display: block;
+      width: 100%; height: 100%;
+      border: none;
+      filter: invert(90%) hue-rotate(180deg) saturate(0.75) brightness(0.9);
+    }
+    /* overlay doré en bas */
+    .addr-map::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 60px;
+      background: linear-gradient(to top, rgba(8,8,8,0.5), transparent);
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <a class="topbar-logo" href="index.html">GOLD &amp; BLACK</a>
+    <a class="topbar-back" href="index.html">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      Retour
+    </a>
+  </header>
+
+  <!-- PAGE -->
+  <main class="page">
+    <div class="addr-hero">
+
+      <!-- Colonne gauche : infos -->
+      <div class="addr-info">
+        <p class="addr-label">Où nous trouver</p>
+        <h1 class="addr-title">Adresse<br>du Salon</h1>
+        <div class="addr-divider"></div>
+        <div class="addr-lines">
+          <span class="line-main">4 Avenue du 6 Juin 1944</span>
+          <span class="line-sub">Goussainville</span>
+          <span class="line-gold">95190 — Île-de-France</span>
+        </div>
+        <a class="addr-btn" href="https://maps.google.com/?q=4+Avenue+du+6+Juin+1944,+95190+Goussainville" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Ouvrir dans Maps
+        </a>
+      </div>
+
+      <!-- Colonne droite : carte -->
+      <div class="addr-map">
+        <iframe
+          loading="lazy"
+          allowfullscreen
+          referrerpolicy="no-referrer-when-downgrade"
+          src="https://maps.google.com/maps?q=4+Avenue+du+6+Juin+1944,+95190+Goussainville&output=embed&z=16"
+        ></iframe>
+      </div>
+
+    </div>
+  </main>
+
+</body>
+</html>

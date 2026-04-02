@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Réseaux Sociaux — Gold & Black</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Montserrat:wght@400;600;700&family=Barlow+Condensed:wght@300;400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --gold: #C9A84C;
+      --gold-gradient: linear-gradient(135deg, #C9A84C 0%, #F5D376 50%, #C9A84C 100%);
+      --black: #0A0A0A;
+      --black-card: #111111;
+      --white: #F5F0E8;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Montserrat', sans-serif;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* ---- TOPBAR ---- */
+    .topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: 72px;
+      background: rgba(8,8,8,0.97);
+      border-bottom: 1px solid rgba(201,168,76,0.18);
+      display: flex; align-items: center;
+      padding: 0 2.5rem;
+    }
+    .topbar-logo {
+      font-family: 'Black Ops One', sans-serif;
+      font-size: 1.4rem;
+      background: var(--gold-gradient);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 0.08em;
+      text-decoration: none;
+    }
+    .topbar-back {
+      margin-left: auto;
+      display: flex; align-items: center; gap: 0.5rem;
+      color: rgba(201,168,76,0.75);
+      font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .topbar-back:hover { color: var(--gold); }
+    .topbar-back svg {
+      width: 14px; height: 14px;
+      stroke: currentColor; fill: none;
+      stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    /* ---- PAGE ---- */
+    .page {
+      flex: 1;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 110px 2rem 5rem;
+      gap: 4rem;
+    }
+
+    /* ---- HEADER ---- */
+    .page-header {
+      text-align: center;
+      display: flex; flex-direction: column; align-items: center; gap: 1.2rem;
+    }
+    .page-label {
+      font-size: 0.65rem; letter-spacing: 0.4em; text-transform: uppercase;
+      color: rgba(201,168,76,0.55); font-weight: 700;
+    }
+    .page-title {
+      font-family: 'Black Ops One', sans-serif;
+      font-size: 3rem; letter-spacing: 0.08em;
+      background: var(--gold-gradient);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .page-sep {
+      width: 60px; height: 1px;
+      background: var(--gold-gradient);
+    }
+    .page-sub {
+      font-size: 0.8rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: rgba(245,240,232,0.35); font-weight: 600;
+    }
+
+    /* ---- CARDS GRID ---- */
+    .cards {
+      display: flex; gap: 2rem; flex-wrap: wrap; justify-content: center;
+    }
+
+    .soc-card {
+      width: 260px;
+      background: var(--black-card);
+      border: 1px solid rgba(201,168,76,0.15);
+      border-radius: 3px;
+      padding: 3rem 2rem 2.5rem;
+      display: flex; flex-direction: column; align-items: center; gap: 1.8rem;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.35s, transform 0.35s, box-shadow 0.35s;
+      cursor: pointer;
+    }
+
+    /* Trait doré top au hover */
+    .soc-card::before {
+      content: '';
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 0; height: 2px;
+      background: var(--gold-gradient);
+      transition: width 0.4s ease;
+    }
+    .soc-card:hover::before { width: 80%; }
+
+    /* Glow de fond au hover */
+    .soc-card::after {
+      content: '';
+      position: absolute; inset: 0;
+      opacity: 0;
+      transition: opacity 0.4s;
+      border-radius: 3px;
+    }
+    .soc-card.insta::after  { background: radial-gradient(ellipse at 50% 0%, rgba(193,53,132,0.12), transparent 70%); }
+    .soc-card.tiktok::after { background: radial-gradient(ellipse at 50% 0%, rgba(105,201,208,0.1), transparent 70%); }
+    .soc-card.fb::after     { background: radial-gradient(ellipse at 50% 0%, rgba(24,119,242,0.1), transparent 70%); }
+    .soc-card:hover::after  { opacity: 1; }
+
+    .soc-card:hover {
+      border-color: rgba(201,168,76,0.4);
+      transform: translateY(-6px);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+    }
+
+    /* Icône */
+    .soc-icon {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      border: 1.5px solid rgba(201,168,76,0.2);
+      background: rgba(255,255,255,0.03);
+      transition: border-color 0.3s, box-shadow 0.3s;
+      position: relative; z-index: 1;
+    }
+    .soc-card:hover .soc-icon {
+      border-color: rgba(201,168,76,0.5);
+      box-shadow: 0 0 24px rgba(201,168,76,0.25);
+    }
+    .soc-icon svg { width: 34px; height: 34px; }
+
+    /* Nom du réseau */
+    .soc-name {
+      font-family: 'Black Ops One', sans-serif;
+      font-size: 1.15rem; letter-spacing: 0.08em;
+      background: var(--gold-gradient);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      position: relative; z-index: 1;
+    }
+
+    /* Handle */
+    .soc-handle {
+      font-size: 0.75rem; font-weight: 600;
+      color: rgba(245,240,232,0.45); letter-spacing: 0.1em;
+      position: relative; z-index: 1;
+      margin-top: -1rem;
+    }
+
+    /* Bouton */
+    .soc-btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid rgba(201,168,76,0.3);
+      padding: 0.55rem 1.4rem;
+      border-radius: 2px;
+      transition: background 0.25s, color 0.25s, border-color 0.25s;
+      position: relative; z-index: 1;
+    }
+    .soc-card:hover .soc-btn {
+      background: var(--gold-gradient);
+      color: var(--black);
+      border-color: transparent;
+    }
+    .soc-btn svg {
+      width: 11px; height: 11px;
+      stroke: currentColor; fill: none;
+      stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <a class="topbar-logo" href="index.html">GOLD &amp; BLACK</a>
+    <a class="topbar-back" href="index.html">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      Retour
+    </a>
+  </header>
+
+  <!-- PAGE -->
+  <main class="page">
+
+    <!-- Header -->
+    <div class="page-header">
+      <p class="page-label">Suivez-nous</p>
+      <h1 class="page-title">Réseaux Sociaux</h1>
+      <div class="page-sep"></div>
+      <p class="page-sub">Gold &amp; Black — Goussainville</p>
+    </div>
+
+    <!-- Cards -->
+    <div class="cards">
+
+      <!-- Instagram -->
+      <a class="soc-card insta" href="https://www.instagram.com/goldandblack.barber/" target="_blank" rel="noopener noreferrer">
+        <div class="soc-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <defs>
+              <linearGradient id="ig" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#f09433"/>
+                <stop offset="25%" stop-color="#e6683c"/>
+                <stop offset="50%" stop-color="#dc2743"/>
+                <stop offset="75%" stop-color="#cc2366"/>
+                <stop offset="100%" stop-color="#bc1888"/>
+              </linearGradient>
+            </defs>
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="url(#ig)" stroke-width="1.8"/>
+            <circle cx="12" cy="12" r="4.5" stroke="url(#ig)" stroke-width="1.8"/>
+            <circle cx="17.5" cy="6.5" r="1" fill="url(#ig)"/>
+          </svg>
+        </div>
+        <span class="soc-name">Instagram</span>
+        <span class="soc-handle">@goldandblack.barber</span>
+        <span class="soc-btn">
+          Nous suivre
+          <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
+      </a>
+
+      <!-- TikTok -->
+      <a class="soc-card tiktok" href="https://www.tiktok.com/@goldandblack95" target="_blank" rel="noopener noreferrer">
+        <div class="soc-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" stroke="#69C9D0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" stroke="#EE1D52" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="2 20"/>
+          </svg>
+        </div>
+        <span class="soc-name">TikTok</span>
+        <span class="soc-handle">@goldandblack95</span>
+        <span class="soc-btn">
+          Nous suivre
+          <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
+      </a>
+
+    </div>
+
+  </main>
+
+</body>
+</html>

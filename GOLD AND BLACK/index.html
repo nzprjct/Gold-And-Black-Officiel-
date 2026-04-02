@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gold & Black — Barbershop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Permanent+Marker&family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #F0D080;
+    --gold-dark: #8B6914;
+    --gold-gradient: linear-gradient(135deg, #8B6914 0%, #C9A84C 40%, #F0D080 60%, #C9A84C 80%, #8B6914 100%);
+    --black: #0A0A0A;
+    --black-soft: #111111;
+    --black-card: #161616;
+    --black-border: #1E1E1E;
+    --white: #F5F0E8;
+    --white-dim: rgba(245,240,232,0.6);
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; cursor: none !important; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Montserrat', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CUSTOM CURSOR */
+  .cursor {
+    width: 8px; height: 8px;
+    background: var(--gold);
+    border-radius: 50%;
+    position: fixed; top: -100px; left: -100px;
+    pointer-events: none; z-index: 9999;
+    transition: transform 0.15s ease, opacity 0.15s ease, width 0.2s ease, height 0.2s ease;
+  }
+  .cursor.hovering {
+    width: 0; height: 0;
+    opacity: 0;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1.5px solid var(--gold);
+    border-radius: 50%;
+    position: fixed; top: -100px; left: -100px;
+    pointer-events: none; z-index: 9998;
+    transition: left 0.08s ease, top 0.08s ease, width 0.25s ease, height 0.25s ease, border-color 0.2s, background 0.2s;
+    opacity: 0.7;
+  }
+  .cursor-ring.hovering {
+    width: 52px; height: 52px;
+    border-color: var(--gold-light);
+    background: rgba(201,168,76,0.12);
+    opacity: 1;
+  }
+
+  .btn-rdv {
+    background: var(--gold-gradient);
+    color: var(--black);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700; font-size: 0.75rem;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 0.6rem 1.4rem;
+    border: none; border-radius: 2px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.3s;
+    white-space: nowrap;
+    position: relative; overflow: hidden;
+  }
+  .btn-rdv::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: rgba(255,255,255,0.2);
+    transform: translateX(-100%);
+    transition: transform 0.4s;
+  }
+  .btn-rdv:hover { transform: translateY(-1px); box-shadow: 0 6px 30px rgba(201,168,76,0.4); }
+  .btn-rdv:hover::after { transform: translateX(100%); }
+
+  /* ============================================================
+     TOP BAR
+     ============================================================ */
+  .tb-logo {
+    flex-shrink: 0;
+    opacity: 0.92;
+    transition: opacity 0.2s;
+  }
+  .tb-logo:hover { opacity: 1; }
+
+  .topbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    height: 100px;
+    background: rgba(8,8,8,0.97);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(201,168,76,0.18);
+    display: flex; align-items: center;
+    box-shadow: 0 2px 40px rgba(0,0,0,0.65);
+    padding: 0 2rem;
+  }
+
+  /* Zone centrale avec viewport */
+  .tb-center {
+    flex: 1;
+    display: flex; align-items: center; justify-content: center;
+    gap: 1.2rem;
+  }
+
+  /* Viewport (window) */
+  .tb-viewport {
+    overflow: hidden;
+    max-width: 700px;
+    width: 100%;
+    height: 40px;
+    position: relative;
+  }
+  .tb-track {
+    position: relative;
+    height: 100%;
+  }
+  .tb-slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    gap: 3rem;
+    transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Séparateur */
+  .tb-sep {
+    width: 1px; height: 22px;
+    background: rgba(201,168,76,0.2);
+    flex-shrink: 0;
+  }
+
+  /* Chaque item */
+  .tb-item { display: flex; align-items: center; }
+  .tb-lbl {
+    font-size: 0.72rem; letter-spacing: 0.28em;
+    text-transform: uppercase; line-height: 1;
+    color: rgba(201,168,76,0.85); font-weight: 700;
+    white-space: nowrap;
+    transition: color 0.2s, text-shadow 0.2s;
+    padding: 0.3rem 0;
+    border-bottom: 1px solid transparent;
+  }
+  .tb-lbl:hover {
+    color: #F5D376;
+    text-shadow: 0 0 18px rgba(245,211,118,0.7);
+    border-bottom-color: rgba(245,211,118,0.5);
+  }
+
+  /* Flèches */
+  .tb-arr {
+    flex-shrink: 0;
+    width: 34px; height: 34px; border-radius: 50%;
+    background: rgba(201,168,76,0.08);
+    border: 1.5px solid var(--gold);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 0 12px rgba(201,168,76,0.35), inset 0 0 6px rgba(201,168,76,0.08);
+    transition: background 0.25s, box-shadow 0.25s;
+  }
+  .tb-arr:hover { background: rgba(201,168,76,0.2); box-shadow: 0 0 22px rgba(201,168,76,0.65); }
+  .tb-arr svg {
+    width: 13px; height: 13px;
+    stroke: var(--gold); fill: none;
+    stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
+    filter: drop-shadow(0 0 4px rgba(201,168,76,0.6));
+  }
+
+  /* Bouton RDV — sorti du flux pour ne pas décaler le centre */
+  .tb-rdv {
+    position: absolute;
+    right: 2rem;
+    top: 50%; transform: translateY(-50%);
+    display: flex; align-items: center;
+  }
+
+  /* HERO */
+  .hero {
+    height: 100vh;
+    padding-top: 100px;
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+
+  .hero-slider {
+    position: absolute; inset: 0;
+    z-index: 0;
+  }
+  .hero-slide {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    opacity: 0;
+    transition: opacity 1.2s ease;
+    transform: scale(1.05);
+    animation: none;
+  }
+  .hero-slide.active {
+    opacity: 1;
+    animation: kenburns 8s ease forwards;
+  }
+  @keyframes kenburns {
+    from { transform: scale(1.05); }
+    to { transform: scale(1); }
+  }
+  .slide-1 {
+    background:
+      linear-gradient(160deg, rgba(10,10,10,0.7) 0%, rgba(10,10,10,0.4) 50%, rgba(10,10,10,0.8) 100%),
+      url('images/slide1.jpg') center/cover;
+  }
+  .slide-2 {
+    background:
+      linear-gradient(160deg, rgba(10,10,10,0.6) 0%, rgba(10,10,10,0.35) 50%, rgba(10,10,10,0.7) 100%),
+      url('images/slide2.jpg') center/cover;
+  }
+  .slide-3 {
+    background:
+      linear-gradient(160deg, rgba(10,10,10,0.65) 0%, rgba(10,10,10,0.3) 50%, rgba(10,10,10,0.75) 100%),
+      url('images/slide3.jpg') center/cover;
+  }
+
+  .hero-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to bottom, rgba(10,10,10,0.3) 0%, transparent 30%, transparent 60%, rgba(10,10,10,0.9) 100%);
+    z-index: 1;
+  }
+
+  .hero-content {
+    position: relative; z-index: 2;
+    text-align: center;
+    width: 100%;
+    padding: 0 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: heroIn 1.5s ease forwards;
+  }
+  @keyframes heroIn {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    border: 1px solid rgba(201,168,76,0.4);
+    padding: 0.4rem 1.2rem; border-radius: 50px;
+    font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold-light); margin-bottom: 2rem;
+    animation: heroIn 1.5s 0.2s both ease;
+  }
+  .hero-badge::before, .hero-badge::after {
+    content: ''; width: 20px; height: 1px; background: var(--gold);
+  }
+
+  .hero-logo-wrap {
+    margin-bottom: 2rem;
+    animation: heroIn 1.5s 0.4s both ease;
+  }
+  .hero-logo-wrap img {
+    width: 160px; height: auto;
+    filter: drop-shadow(0 0 40px rgba(201,168,76,0.4));
+  }
+
+  .hero-title {
+    font-family: 'Black Ops One', 'Barlow Condensed', sans-serif;
+    font-size: clamp(4rem, 12vw, 11rem);
+    font-weight: 400; line-height: 0.9;
+    letter-spacing: 0.06em;
+    background: var(--gold-gradient);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+    animation: heroIn 1.5s 0.5s both ease;
+    text-shadow: none;
+    text-align: center;
+    width: 100%;
+  }
+  .hero-subtitle {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-style: italic; font-size: clamp(1rem, 2.5vw, 1.5rem);
+    font-weight: 400;
+    color: var(--white-dim); letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    animation: heroIn 1.5s 0.6s both ease;
+  }
+  .hero-award {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--gold);
+    animation: heroIn 1.5s 0.7s both ease;
+    margin-bottom: 3rem;
+  }
+  .hero-award svg { width: 14px; height: 14px; }
+
+  .hero-cta-group {
+    display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+    animation: heroIn 1.5s 0.9s both ease;
+  }
+  .hero-btn-primary {
+    background: var(--gold-gradient);
+    color: var(--black);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700; font-size: 0.85rem;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    padding: 1rem 2.5rem; border: none;
+    cursor: pointer; position: relative; overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.3s;
+  }
+  .hero-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(201,168,76,0.5); }
+  .hero-btn-secondary {
+    background: transparent;
+    color: var(--white);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500; font-size: 0.85rem;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    padding: 1rem 2.5rem;
+    border: 1px solid rgba(201,168,76,0.5);
+    cursor: pointer;
+    transition: border-color 0.3s, color 0.3s, background 0.3s;
+  }
+  .hero-btn-secondary:hover { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.05); }
+
+  /* Slider dots */
+  .hero-dots { display: none; }
+
+  /* Scroll indicator */
+  .scroll-hint { display: none; }
+
+  /* GOLD DIVIDER */
+  .gold-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 0;
+  }
+
+  /* SECTION GENERALE */
+  section { padding: 5rem 2rem; }
+
+  .section-eyebrow {
+    font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .section-eyebrow::after { content: ''; flex: 0 0 40px; height: 1px; background: var(--gold); }
+
+  .section-title {
+    font-family: 'Black Ops One', 'Barlow Condensed', sans-serif;
+    font-size: clamp(2.8rem, 7vw, 5.5rem);
+    font-weight: 400; line-height: 0.95; letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+  .section-title span {
+    background: var(--gold-gradient);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .collab-title {
+    font-family: 'Permanent Marker', cursive;
+    font-size: clamp(2rem, 5vw, 4rem);
+    background: var(--gold-gradient);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+    letter-spacing: 0.01em;
+    margin-bottom: 1.5rem;
+    display: block;
+  }
+
+  /* SERVICES */
+  .services-section {
+    background: var(--black-soft);
+    max-width: 100%; overflow: hidden;
+  }
+  .services-inner { max-width: 1200px; margin: 0 auto; }
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5px;
+    margin-top: 3rem;
+    border: 1px solid rgba(201,168,76,0.15);
+  }
+  .service-card {
+    background: var(--black-card);
+    padding: 2.5rem 2rem;
+    position: relative; overflow: hidden;
+    transition: background 0.3s;
+    cursor: pointer;
+  }
+  .service-card::before {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+    background: var(--gold-gradient);
+    transform: scaleX(0); transition: transform 0.4s;
+  }
+  .service-card:hover { background: #1A1A1A; }
+  .service-card:hover::before { transform: scaleX(1); }
+  .service-icon {
+    font-size: 2rem; margin-bottom: 1rem;
+    filter: grayscale(1) sepia(1) saturate(3) hue-rotate(5deg);
+  }
+  .service-name {
+    font-family: 'Black Ops One', sans-serif;
+    font-size: 1.3rem; font-weight: 400; letter-spacing: 0.06em; margin-bottom: 0.5rem;
+  }
+  .service-barber {
+    font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 0.75rem;
+  }
+  .service-desc { font-size: 0.8rem; color: var(--white-dim); line-height: 1.6; }
+  .service-price {
+    margin-top: 1.5rem;
+    font-family: 'Black Ops One', sans-serif; font-size: 1.5rem; letter-spacing: 0.08em;
+    background: var(--gold-gradient);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* TEAM */
+  .team-section { max-width: 1200px; margin: 0 auto; }
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 2rem; margin-top: 3rem;
+  }
+  .team-card {
+    text-align: center; position: relative;
+  }
+  .team-avatar {
+    width: 120px; height: 120px; border-radius: 50%; margin: 0 auto 1.5rem;
+    background: var(--black-card);
+    border: 2px solid rgba(201,168,76,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    color: var(--gold);
+    position: relative;
+  }
+  .team-avatar-bg {
+    width: 120px; height: 120px; border-radius: 50%;
+    background: var(--black-card);
+    border: 2px solid rgba(201,168,76,0.3);
+    margin: 0 auto 1.5rem;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Black Ops One', sans-serif; font-size: 2.5rem;
+    color: var(--gold); position: relative;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .team-card:hover .team-avatar-bg { border-color: var(--gold); box-shadow: 0 0 30px rgba(201,168,76,0.3); }
+  .team-name { font-family: 'Black Ops One', sans-serif; font-size: 1.4rem; letter-spacing: 0.08em; margin-bottom: 0.3rem; }
+  .team-role { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); }
+
+  /* STATS */
+  .stats-section {
+    background: var(--black);
+    border-top: 1px solid rgba(201,168,76,0.2);
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+  }
+  .stats-grid {
+    max-width: 600px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 0; text-align: center;
+  }
+  .stat-item {
+    padding: 3rem 2rem;
+    border-right: 1px solid rgba(201,168,76,0.15);
+    position: relative;
+  }
+  .stat-item::after {
+    content: '';
+    position: absolute; bottom: 0; left: 20%; right: 20%; height: 2px;
+    background: var(--gold-gradient);
+    transform: scaleX(0); transition: transform 0.4s;
+  }
+  .stat-item:hover::after { transform: scaleX(1); }
+  .stat-item:last-child { border-right: none; }
+  .stat-number {
+    font-family: 'Black Ops One', sans-serif;
+    font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 400; letter-spacing: 0.05em;
+    background: var(--gold-gradient);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: block; margin-bottom: 0.5rem;
+  }
+  .stat-label { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--white-dim); }
+
+  /* FOOTER */
+  .footer {
+    background: var(--black-soft);
+    border-top: 1px solid rgba(201,168,76,0.12);
+    padding: 4rem 2rem 0;
+  }
+  .footer-grid {
+    max-width: 1200px; margin: 0 auto;
+    display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr;
+    gap: 3rem;
+    padding-bottom: 3.5rem;
+    border-bottom: 1px solid rgba(201,168,76,0.08);
+  }
+  .footer-brand .brand-name {
+    font-family: 'Black Ops One', sans-serif;
+    font-size: 1.8rem; font-weight: 400; letter-spacing: 0.08em;
+    background: var(--gold-gradient);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: block; margin-bottom: 0.4rem;
+  }
+  .footer-tagline { font-size: 0.75rem; color: var(--white-dim); margin-bottom: 1.8rem; font-style: italic; }
+  .footer-social { display: flex; gap: 0.75rem; }
+  .footer-social a {
+    width: 40px; height: 40px; border-radius: 12px;
+    border: none;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    overflow: hidden;
+  }
+  .footer-social a:hover { transform: scale(1.1); box-shadow: 0 4px 20px rgba(0,0,0,0.55); }
+  .footer-social a svg { width: 20px; height: 20px; }
+
+  .footer-col h4 {
+    font-size: 0.65rem; letter-spacing: 0.22em; text-transform: uppercase;
+    color: rgba(201,168,76,0.65); margin-bottom: 1.4rem; font-weight: 700;
+  }
+  .footer-col ul { list-style: none; }
+  .footer-col ul li { margin-bottom: 0.65rem; }
+  .footer-col ul li a, .footer-col ul li span {
+    font-size: 0.8rem; color: rgba(245,240,232,0.42); text-decoration: none;
+    transition: color 0.2s; line-height: 1.4;
+  }
+  .footer-col ul li a:hover { color: rgba(245,240,232,0.9); }
+
+  .footer-bottom {
+    max-width: 1200px; margin: 0 auto;
+    padding: 1.4rem 0 1.8rem;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.68rem; color: rgba(245,240,232,0.18);
+    letter-spacing: 0.06em;
+  }
+
+  /* MODAL RDV */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 2000;
+    background: rgba(10,10,10,0.95);
+    backdrop-filter: blur(20px);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.4s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+  .modal {
+    background: var(--black-card);
+    border: 1px solid rgba(201,168,76,0.3);
+    max-width: 720px; width: 94%;
+    position: relative;
+    transform: translateY(30px); transition: transform 0.4s;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+
+  .modal-header {
+    padding: 2.8rem 2.5rem 2.2rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(201,168,76,0.1);
+    position: relative;
+    background: var(--black-card); z-index: 1;
+  }
+  .modal-title {
+    font-family: 'Black Ops One', sans-serif; font-size: 2.6rem; font-weight: 400; letter-spacing: 0.06em;
+    background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.15;
+    margin-bottom: 0;
+  }
+  .modal-sub { display: none; }
+  .modal-close {
+    position: absolute; top: 1.5rem; right: 1.5rem;
+    background: transparent; border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold); width: 36px; height: 36px;
+    cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .modal-close:hover { background: rgba(201,168,76,0.1); }
+
+  .modal-body { padding: 2.5rem 2.8rem 2.8rem; display: flex; flex-direction: column; gap: 2rem; }
+
+  .modal-step { margin-bottom: 2rem; }
+  .step-label {
+    font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .step-num {
+    width: 20px; height: 20px; background: var(--gold-gradient);
+    color: var(--black); font-size: 0.7rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .rdv-categories {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;
+  }
+  .rdv-cat {
+    background: rgba(201,168,76,0.05); border: 1px solid rgba(201,168,76,0.2);
+    padding: 1rem 1.2rem; cursor: pointer; transition: all 0.25s;
+    display: flex; flex-direction: column; gap: 0.3rem;
+  }
+  .rdv-cat:hover, .rdv-cat.selected {
+    background: rgba(201,168,76,0.1); border-color: var(--gold);
+  }
+  .rdv-cat-name { font-size: 0.85rem; font-weight: 600; }
+  .rdv-cat-barber { font-size: 0.65rem; color: var(--gold); text-transform: uppercase; letter-spacing: 0.08em; }
+  .rdv-cat-price { font-family: 'Black Ops One', sans-serif; font-size: 1rem; letter-spacing: 0.06em; color: var(--gold); }
+
+  .planity-note {
+    background: transparent;
+    border-left: 2px solid rgba(201,168,76,0.35);
+    padding: 0.4rem 0 0.4rem 1.6rem;
+    font-size: 0.92rem; color: rgba(245,240,232,0.6); line-height: 1.9;
+    text-align: left;
+    margin-top: 0;
+    display: flex; flex-direction: column; gap: 0.9rem;
+  }
+  .planity-note strong { color: var(--white); }
+  .planity-note .note-line { display: block; }
+  .planity-btn {
+    display: block; width: 100%;
+    background: var(--gold-gradient); color: var(--black);
+    font-family: 'Montserrat', sans-serif; font-weight: 800;
+    font-size: 0.9rem; letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 1.6rem 2rem; text-align: center; border: none;
+    cursor: pointer; margin-top: 0;
+    transition: box-shadow 0.3s, transform 0.2s;
+    text-decoration: none;
+  }
+  .planity-btn:hover { box-shadow: 0 8px 30px rgba(201,168,76,0.4); transform: translateY(-1px); }
+
+  /* SCROLL ANIMATIONS */
+  .reveal {
+    opacity: 0; transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: none; }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--black); }
+  ::-webkit-scrollbar-thumb { background: var(--gold-dark); }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .tb-rdv { display: none; }
+    .tb-items { gap: 2rem; }
+  }
+  @media (max-width: 600px) {
+    .tb-items { gap: 1.2rem; }
+    .tb-val { font-size: 0.65rem; }
+    .tb-sep { display: none; }
+  }
+  @media (max-width: 768px) {
+    .hero { padding-top: 100px; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .stat-item { padding: 2rem 0.75rem; }
+    .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .rdv-categories { grid-template-columns: 1fr; }
+    .hero-cta-group { flex-direction: column; align-items: center; }
+    .hero-btn-primary, .hero-btn-secondary { width: 100%; max-width: 280px; }
+    .modal { max-height: 95vh; }
+    .modal-body { padding: 1.5rem; }
+    .modal-header { padding: 1.5rem; }
+  }
+  @media (max-width: 480px) {
+    .btn-rdv { padding: 0.5rem 1rem; font-size: 0.68rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Custom Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<!-- TOP BAR -->
+<header class="topbar" id="topbar">
+
+  <!-- Logo haut gauche -->
+  <a href="#hero" class="tb-logo">
+    <svg width="44" height="38" viewBox="0 0 120 104" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 0 8px rgba(201,168,76,0.4))">
+      <defs>
+        <linearGradient id="tbGold" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#8B6914"/>
+          <stop offset="40%" stop-color="#C9A84C"/>
+          <stop offset="60%" stop-color="#F0D080"/>
+          <stop offset="100%" stop-color="#8B6914"/>
+        </linearGradient>
+      </defs>
+      <polygon points="115,52 88,101 32,101 5,52 32,3 88,3" fill="url(#tbGold)"/>
+      <polygon points="107,52 83,95 37,95 13,52 37,9 83,9" fill="#111"/>
+      <polygon points="100,52 79,89 41,89 20,52 41,15 79,15" fill="#161616"/>
+      <text x="43" y="69" text-anchor="middle" font-family="'Black Ops One', Impact, sans-serif" font-size="42" fill="#FFFFFF" letter-spacing="-1">G</text>
+      <text x="77" y="69" text-anchor="middle" font-family="'Black Ops One', Impact, sans-serif" font-size="42" fill="url(#tbGold)" letter-spacing="-1">B</text>
+    </svg>
+  </a>
+
+  <div class="tb-center">
+
+    <!-- Flèche gauche -->
+    <button class="tb-arr" id="tbLeft" aria-label="Précédent">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+
+    <!-- Viewport -->
+    <div class="tb-viewport">
+      <div class="tb-track" id="tbTrack">
+
+        <!-- Slide 0 -->
+        <div class="tb-slide">
+          <div class="tb-item"><a href="adresse.html" class="tb-lbl" style="text-decoration:none;">Adresse Du Salon</a></div>
+          <div class="tb-sep"></div>
+          <div class="tb-item"><a href="horaires.html" class="tb-lbl" style="text-decoration:none;">Horaires</a></div>
+          <div class="tb-sep"></div>
+          <div class="tb-item"><a href="reseaux.html" class="tb-lbl" style="text-decoration:none;">Réseaux Sociaux</a></div>
+        </div>
+
+        <!-- Slide 1 -->
+        <div class="tb-slide">
+          <div class="tb-item"><a href="#equipe" class="tb-lbl" style="text-decoration:none;">Collaborateurs</a></div>
+          <div class="tb-sep"></div>
+          <div class="tb-item"><a href="informations.html" class="tb-lbl" style="text-decoration:none;">Informations</a></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Flèche droite -->
+    <button class="tb-arr" id="tbRight" aria-label="Suivant">
+      <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+
+  </div>
+
+  <!-- Bouton RDV -->
+  <div class="tb-rdv">
+    <button class="btn-rdv" onclick="openModal()">Prendre RDV</button>
+  </div>
+
+</header>
+
+<section class="hero" id="hero">
+  <div class="hero-slider">
+    <div class="hero-slide slide-1 active" id="slide-0"></div>
+    <div class="hero-slide slide-2" id="slide-1"></div>
+    <div class="hero-slide slide-3" id="slide-2"></div>
+  </div>
+  <div class="hero-overlay"></div>
+
+  <div class="hero-content">
+    <div class="hero-logo-wrap">
+      <svg width="180" height="156" viewBox="0 0 120 104" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 0 40px rgba(201,168,76,0.6))">
+        <defs>
+          <linearGradient id="heroGold" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#7A5C0F"/>
+            <stop offset="30%" stop-color="#C9A84C"/>
+            <stop offset="55%" stop-color="#F0D080"/>
+            <stop offset="80%" stop-color="#C9A84C"/>
+            <stop offset="100%" stop-color="#7A5C0F"/>
+          </linearGradient>
+        </defs>
+        <!-- Outer thick gold hexagon -->
+        <polygon points="115,52 88,101 32,101 5,52 32,3 88,3" fill="url(#heroGold)"/>
+        <!-- Dark border ring -->
+        <polygon points="107,52 83,95 37,95 13,52 37,9 83,9" fill="#111"/>
+        <!-- White inner outline -->
+        <polygon points="107,52 83,95 37,95 13,52 37,9 83,9" fill="none" stroke="#FFFFFF" stroke-width="3"/>
+        <!-- Dark inner fill -->
+        <polygon points="100,52 79,89 41,89 20,52 41,15 79,15" fill="#161616"/>
+        <!-- G white, large -->
+        <text x="43" y="69" text-anchor="middle" font-family="'Black Ops One', Impact, sans-serif" font-size="42" fill="#FFFFFF" letter-spacing="-1">G</text>
+        <!-- B gold, large -->
+        <text x="77" y="69" text-anchor="middle" font-family="'Black Ops One', Impact, sans-serif" font-size="42" fill="url(#heroGold)" letter-spacing="-1">B</text>
+      </svg>
+    </div>
+
+    <h1 class="hero-title">GOLD &amp; BLACK</h1>
+    <p class="hero-subtitle">L'art de la coupe, l'excellence du style</p>
+    <p class="hero-award">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      Meilleur Barber 2025 — NHCuts International
+    </p>
+
+    <div class="hero-cta-group">
+      <button class="hero-btn-primary" onclick="openModal()">✂ Prendre Rendez-vous</button>
+      <button class="hero-btn-secondary" onclick="document.getElementById('services').scrollIntoView({behavior:'smooth'})">Découvrir</button>
+    </div>
+  </div>
+
+  <div class="hero-dots" id="heroDots">
+    <div class="hero-dot active" onclick="goToSlide(0)"></div>
+    <div class="hero-dot" onclick="goToSlide(1)"></div>
+    <div class="hero-dot" onclick="goToSlide(2)"></div>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<div class="gold-divider"></div>
+
+<!-- STATS -->
+<section class="stats-section">
+  <div class="stats-grid">
+    <div class="stat-item reveal">
+      <span class="stat-number">#1</span>
+      <span class="stat-label">Meilleur Barber 2025</span>
+    </div>
+    <div class="stat-item reveal reveal-delay-1">
+      <span class="stat-number">★ 4.8</span>
+      <span class="stat-label">Note Google</span>
+    </div>
+
+  </div>
+</section>
+
+<div class="gold-divider"></div>
+
+<!-- SERVICES -->
+<section class="services-section" id="services">
+  <div class="services-inner">
+    <div class="reveal">
+      <p class="section-eyebrow">Nos Prestations</p>
+      <h2 class="section-title">Un service pour <span>chaque style</span></h2>
+    </div>
+    <div class="services-grid">
+      <div class="service-card reveal" onclick="openModal('coupe')">
+        <div class="service-icon">✂</div>
+        <div class="service-name">Coupe / Barbe</div>
+        <div class="service-desc">Coupe personnalisée, contour précis, barbe sculptée. L'expérience barbershop Gold & Black.</div>
+      </div>
+      <div class="service-card reveal reveal-delay-1" onclick="openModal('tresses-h')">
+        <div class="service-icon">🪢</div>
+        <div class="service-name">Tresses Hommes</div>
+        <div class="service-desc">Box braids, cornrows, vanille, créations tressées pour hommes.</div>
+      </div>
+      <div class="service-card reveal reveal-delay-2" onclick="openModal('tresses-f')">
+        <div class="service-icon">🪢</div>
+        <div class="service-name">Tresses Femmes</div>
+        <div class="service-desc">Nattes, knotless, twists, braids, créations sur mesure pour cheveux naturels et texturés.</div>
+      </div>
+      <div class="service-card reveal reveal-delay-3" onclick="openModal('locks')">
+        <div class="service-icon">🌀</div>
+        <div class="service-name">Locks</div>
+        <div class="service-desc">Pose, retwist et entretien de locks, expertise sur toutes longueurs.</div>
+      </div>
+      <div class="service-card reveal" onclick="openModal('soin-visage')">
+        <div class="service-icon">◈</div>
+        <div class="service-name">Coupe + Soin Visage</div>
+        <div class="service-desc">Coupe complète avec soin du visage intégral, la formule premium.</div>
+      </div>
+      <div class="service-card reveal reveal-delay-1" onclick="openModal('coloration')">
+        <div class="service-icon">🎨</div>
+        <div class="service-name">Colorations & Techniques</div>
+        <div class="service-desc">Coloration, balayage, décoloration, expertise couleur pour tous types de cheveux.</div>
+      </div>
+      <div class="service-card reveal reveal-delay-2" onclick="openModal('permanente')">
+        <div class="service-icon">✨</div>
+        <div class="service-name">Permanente</div>
+        <div class="service-desc">Permanente classique ou digitale pour des boucles durables et définies.</div>
+      </div>
+      <div class="service-card reveal reveal-delay-3" onclick="openModal('duo')">
+        <div class="service-icon">🤝</div>
+        <div class="service-name">Formule Duo</div>
+        <div class="service-desc">Offre spéciale duo — disponible les <strong>Mardis &amp; Mercredis uniquement</strong>.</div>
+      </div>
+      <div class="service-card reveal" onclick="openModal('coiffage-f')">
+        <div class="service-icon">✂</div>
+        <div class="service-name">Coupe &amp; Coiffage Femme</div>
+        <div class="service-desc">Coupe et mise en forme pour femmes, cheveux naturels, texturés ou lisses.</div>
+      </div>
+      <div class="service-card reveal reveal-delay-1" onclick="openModal('tissages')">
+        <div class="service-icon">🪡</div>
+        <div class="service-name">Tissages</div>
+        <div class="service-desc">Pose de tissage et extensions, résultat naturel et longue durée.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="gold-divider"></div>
+
+<!-- TEAM -->
+<section id="equipe" style="padding: 5rem 2rem; background: var(--black);">
+  <div class="team-section">
+    <div class="reveal">
+      <h2 class="collab-title">Collaborateur en or</h2>
+    </div>
+    <div class="team-grid">
+      <div class="team-card reveal">
+        <div class="team-avatar-bg">W</div>
+        <div class="team-name">Walter</div>
+      </div>
+      <div class="team-card reveal reveal-delay-1">
+        <div class="team-avatar-bg">L</div>
+        <div class="team-name">Lauw</div>
+      </div>
+      <div class="team-card reveal reveal-delay-2">
+        <div class="team-avatar-bg">I</div>
+        <div class="team-name">Ilies</div>
+      </div>
+      <div class="team-card reveal reveal-delay-3">
+        <div class="team-avatar-bg">B</div>
+        <div class="team-name">Bouba</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-grid">
+
+    <div class="footer-brand reveal">
+      <span class="brand-name">Gold &amp; Black</span>
+      <p class="footer-tagline">L'art de la coupe, l'excellence du style</p>
+      <div class="footer-social">
+        <a href="https://www.instagram.com/goldandblack.barber/" target="_blank" rel="noopener noreferrer" title="Instagram" style="background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="white" stroke="none"/></svg>
+        </a>
+        <a href="https://www.tiktok.com/@goldandblack95" target="_blank" rel="noopener noreferrer" title="TikTok" style="background: #010101">
+          <svg viewBox="0 0 24 24" fill="white"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.53V6.77a4.85 4.85 0 01-1.01-.08z"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="footer-col reveal reveal-delay-1">
+      <h4>Navigation</h4>
+      <ul>
+        <li><a href="#hero">Accueil</a></li>
+        <li><a href="#services">Nos prestations</a></li>
+        <li><a href="#equipe">L'équipe</a></li>
+        <li><a href="#" onclick="openModal()">Prendre rendez-vous</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col reveal reveal-delay-2">
+      <h4>Nos services</h4>
+      <ul>
+        <li><span>Coupe homme</span></li>
+        <li><span>Entretien de barbe</span></li>
+        <li><span>Locks &amp; tresses</span></li>
+        <li><span>Coloration</span></li>
+        <li><span>Soin visage</span></li>
+        <li><span>Formule duo</span></li>
+      </ul>
+    </div>
+
+    <div class="footer-col reveal reveal-delay-3">
+      <h4>Le salon</h4>
+      <ul>
+        <li><a href="adresse.html">Adresse &amp; accès</a></li>
+        <li><a href="horaires.html">Horaires d'ouverture</a></li>
+        <li><a href="reseaux.html">Réseaux sociaux</a></li>
+        <li><a href="informations.html">À propos</a></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    <span>© 2026 Gold &amp; Black — Tous droits réservés</span>
+    <span>4 Av. du 6 juin 1944, 95190 Goussainville</span>
+  </div>
+</footer>
+
+<!-- MODAL RDV -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-title">Prendre Rendez-vous</div>
+      <div class="modal-sub">Sélectionnez votre prestation pour continuer sur Planity</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="planity-note">
+        <span class="note-line"><strong>En 2 secondes</strong>, vous serez redirigé sur la page <strong>Planity de Gold &amp; Black</strong>. ⚡</span>
+        <span class="note-line">Notre système de réservation en ligne simple, rapide, sans compte.</span>
+        <span class="note-line">Choisissez votre créneau maintenant !</span>
+      </div>
+
+      <a id="planityBtn" href="https://www.planity.com/gold-and-black-95190-goussainville" target="_blank" rel="noopener noreferrer" class="planity-btn">
+        Confirmer et réserver sur Planity →
+      </a>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  // ============================================================
+  // TOP BAR SLIDER
+  // flèche gauche (←) = contenu sort par la GAUCHE
+  // flèche droite (→) = contenu sort par la DROITE
+  // ============================================================
+  (function () {
+    const slides = Array.from(document.querySelectorAll('#tbTrack .tb-slide'));
+    const n = slides.length;
+    let current = 0;
+    let busy    = false;
+
+    // Positionnement initial
+    slides[0].style.transform = 'translateX(0)';
+    for (let i = 1; i < n; i++) slides[i].style.transform = 'translateX(100%)';
+
+    function go(dir) {
+      // dir 'left'  : contenu actuel sort à gauche, suivant entre par la droite
+      // dir 'right' : contenu actuel sort à droite, précédent entre par la gauche
+      if (busy) return;
+      busy = true;
+
+      const next     = dir === 'left'
+        ? (current + 1) % n
+        : (current - 1 + n) % n;
+      const leaving  = slides[current];
+      const entering = slides[next];
+
+      // Placer le slide entrant hors écran du bon côté (sans animation)
+      entering.style.transition = 'none';
+      entering.style.transform  = dir === 'left' ? 'translateX(100%)' : 'translateX(-100%)';
+      entering.offsetHeight; // force reflow
+
+      // Lancer l'animation des deux
+      const ease = 'transform 0.55s cubic-bezier(0.4, 0, 0.2, 1)';
+      leaving.style.transition  = ease;
+      entering.style.transition = ease;
+      leaving.style.transform   = dir === 'left' ? 'translateX(-100%)' : 'translateX(100%)';
+      entering.style.transform  = 'translateX(0)';
+
+      current = next;
+      setTimeout(() => { busy = false; }, 600);
+    }
+
+    document.getElementById('tbLeft').addEventListener('click',  () => go('left'));
+    document.getElementById('tbRight').addEventListener('click', () => go('right'));
+  })();
+
+  // ============================================================
+  // CURSOR
+  // ============================================================
+  const cursor = document.getElementById('cursor');
+  const ring   = document.getElementById('cursor-ring');
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = (e.clientX - 4) + 'px';
+    cursor.style.top  = (e.clientY - 4) + 'px';
+    ring.style.left   = (e.clientX - 18) + 'px';
+    ring.style.top    = (e.clientY - 18) + 'px';
+  });
+
+  // Agrandir le curseur sur les éléments interactifs
+  const interactives = document.querySelectorAll('a, button, [onclick], .service-card, .rdv-cat, .hero-dot, .stat-item');
+  interactives.forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.classList.add('hovering');
+      ring.classList.add('hovering');
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.classList.remove('hovering');
+      ring.classList.remove('hovering');
+    });
+  });
+
+  // ============================================================
+  // HERO SLIDER
+  // ============================================================
+  let currentSlide = 0;
+  const slides = document.querySelectorAll('.hero-slide');
+  const dots = document.querySelectorAll('.hero-dot');
+
+  function goToSlide(n) {
+    slides[currentSlide].classList.remove('active');
+    dots[currentSlide].classList.remove('active');
+    currentSlide = n;
+    slides[currentSlide].classList.add('active');
+    dots[currentSlide].classList.add('active');
+  }
+
+  setInterval(() => {
+    goToSlide((currentSlide + 1) % slides.length);
+  }, 5000);
+
+  // ============================================================
+  // SCROLL REVEAL
+  // ============================================================
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => io.observe(el));
+
+  // ============================================================
+  // COUNT UP
+  // ============================================================
+  const counters = document.querySelectorAll('.stat-number[data-count]');
+  const countIO = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const target = +e.target.dataset.count;
+        let count = 0; const step = target / 60;
+        const timer = setInterval(() => {
+          count += step;
+          if (count >= target) { count = target; clearInterval(timer); }
+          e.target.textContent = Math.floor(count).toLocaleString('fr-FR') + '+';
+        }, 20);
+        countIO.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.5 });
+  counters.forEach(el => countIO.observe(el));
+
+  // ============================================================
+  // MODAL
+  // ============================================================
+  function openModal(cat) {
+    document.getElementById('modalOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    if (cat) selectCat(cat);
+  }
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function closeModalOutside(e) {
+    if (e.target === document.getElementById('modalOverlay')) closeModal();
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  let selectedCat = null;
+  const planityURLs = {
+    'coupe': 'https://www.planity.com/gold-and-black-95190-goussainville',
+    'tresses-h': 'https://www.planity.com/gold-and-black-95190-goussainville',
+    'tresses-f': 'https://www.planity.com/gold-and-black-95190-goussainville',
+    'locks': 'https://www.planity.com/gold-and-black-95190-goussainville',
+    'soin-visage': 'https://www.planity.com/gold-and-black-95190-goussainville',
+    'coloration': 'https://www.planity.com/gold-and-black-95190-goussainville',
+    'permanente': 'https://www.planity.com/gold-and-black-95190-goussainville',
+    'duo': 'https://www.planity.com/gold-and-black-95190-goussainville',
+    'coiffage-f': 'https://www.planity.com/gold-and-black-95190-goussainville',
+    'tissages': 'https://www.planity.com/gold-and-black-95190-goussainville',
+  };
+
+  function selectCat(cat) {
+    document.querySelectorAll('.rdv-cat').forEach(el => el.classList.remove('selected'));
+    const el = document.getElementById('cat-' + cat);
+    if (el) el.classList.add('selected');
+    selectedCat = cat;
+    document.getElementById('planityBtn').href = planityURLs[cat] || 'https://www.planity.com/gold-and-black-95190-goussainville';
+  }
+
+
+</script>
+</body>
+</html>
